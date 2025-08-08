@@ -344,6 +344,22 @@ class MainViewModel(
         _savedItems.value = current
     }
 
+    fun increaseSavedItemQty(item: TShirt) {
+        val current = _savedItems.value.toMutableMap()
+        val qty = current[item] ?: 1
+        current[item] = qty + 1
+        _savedItems.value = current
+    }
+
+    fun decreaseSavedItemQty(item: TShirt) {
+        val current = _savedItems.value.toMutableMap()
+        val qty = current[item] ?: 1
+        if (qty > 1) {
+            current[item] = qty - 1
+        }
+        _savedItems.value = current
+    }
+
 
     companion object {
         fun generateConfirmationNumber(): String {

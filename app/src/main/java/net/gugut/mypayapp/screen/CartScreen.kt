@@ -115,7 +115,9 @@ fun CartScreen(
                             item = item,
                             qty = qty,
                             onMoveToCart = { cartViewModel.moveToCartFromSaved(item) },
-                            onRemove = { cartViewModel.removeSavedItem(item) }
+                            onRemove = { cartViewModel.removeSavedItem(item) },
+                            onIncreaseQty = { cartViewModel.increaseSavedItemQty(item) },
+                            onDecreaseQty = { cartViewModel.decreaseSavedItemQty(item) }
                         )
                     }
                 }
@@ -188,82 +190,175 @@ fun CartItemRow(
 fun SavedItemRow(
     item: TShirt,
     qty: Int,
+    onIncreaseQty: () -> Unit,
+    onDecreaseQty: () -> Unit,
     onMoveToCart: () -> Unit,
     onRemove: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 4.dp),
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .padding(12.dp)
-        ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
                     painter = painterResource(id = item.imageResourceId),
                     contentDescription = item.name,
-                    modifier = Modifier
-                        .size(72.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                    modifier = Modifier.size(64.dp)
                 )
 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(8.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = item.name,
-                        style = MaterialTheme.typography.titleSmall,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = "Qty: $qty",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Text(
-                        text = "Price: $${String.format("%.2f", item.price)}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
+                    Text(item.name, style = MaterialTheme.typography.titleSmall)
+                    Text("Price: $${"%.2f".format(item.price)}", style = MaterialTheme.typography.bodySmall)
+
+                    // Quantity Row with - / qty / +
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(top = 4.dp)
+                    ) {
+                        IconButton(onClick = onDecreaseQty, enabled = qty > 1) {
+                            Icon(Icons.Default.Remove, contentDescription = "Decrease Quantity")
+                        }
+
+                        Text(
+                            qty.toString(),
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
+
+                        IconButton(onClick = onIncreaseQty) {
+                            Icon(Icons.Default.Add, contentDescription = "Increase Quantity")
+                        }
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedButton(
                     onClick = onMoveToCart,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = "Move to Cart"
+                        contentDescription = "Move to Cart",
+                        modifier = Modifier.size(16.dp)
                     )
-                    Spacer(Modifier.width(6.dp))
-                    Text("Move to Cart")
+                    Spacer(Modifier.width(4.dp))
+                    Text("Move to Cart", style = MaterialTheme.typography.labelSmall)
                 }
 
                 OutlinedButton(
                     onClick = onRemove,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove"
+                        contentDescription = "Remove",
+                        modifier = Modifier.size(16.dp)
                     )
-                    Spacer(Modifier.width(6.dp))
-                    Text("Remove")
+                    Spacer(Modifier.width(4.dp))
+                    Text("Remove", style = MaterialTheme.typography.labelSmall)
                 }
             }
         }
     }
 }
+
+//@Composable
+//fun SavedItemRow(
+//    item: TShirt,
+//    qty: Int,
+//    onMoveToCart: () -> Unit,
+//    onRemove: () -> Unit
+//) {
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(vertical = 8.dp),
+//        shape = MaterialTheme.shapes.medium,
+//        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+//    ) {
+//        Column(
+//            modifier = Modifier
+//                .padding(12.dp)
+//        ) {
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                Image(
+//                    painter = painterResource(id = item.imageResourceId),
+//                    contentDescription = item.name,
+//                    modifier = Modifier
+//                        .size(72.dp)
+//                        .clip(RoundedCornerShape(8.dp))
+//                )
+//
+//                Spacer(modifier = Modifier.width(12.dp))
+//
+//                Column(modifier = Modifier.weight(1f)) {
+//                    Text(
+//                        text = item.name,
+//                        style = MaterialTheme.typography.titleSmall,
+//                        maxLines = 1,
+//                        overflow = TextOverflow.Ellipsis
+//                    )
+//                    Text(
+//                        text = "Qty: $qty",
+//                        style = MaterialTheme.typography.bodySmall
+//                    )
+//                    Text(
+//                        text = "Price: $${String.format("%.2f", item.price)}",
+//                        style = MaterialTheme.typography.bodySmall
+//                    )
+//                }
+//            }
+//
+//            Spacer(modifier = Modifier.height(12.dp))
+//
+//            Row(
+//                horizontalArrangement = Arrangement.spacedBy(12.dp),
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                OutlinedButton(
+//                    onClick = onMoveToCart,
+//                    modifier = Modifier.weight(1f)
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Default.ShoppingCart,
+//                        contentDescription = "Move to Cart"
+//                    )
+//                    Spacer(Modifier.width(6.dp))
+//                    Text("Move to Cart")
+//                }
+//
+//                OutlinedButton(
+//                    onClick = onRemove,
+//                    modifier = Modifier.weight(1f)
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Default.Delete,
+//                        contentDescription = "Remove"
+//                    )
+//                    Spacer(Modifier.width(6.dp))
+//                    Text("Remove")
+//                }
+//            }
+//        }
+//    }
+//}
